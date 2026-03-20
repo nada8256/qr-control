@@ -2,97 +2,39 @@
 <html>
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leave Your Trace</title>
   <style>
     body {
-      background: radial-gradient(circle, #111 0%, #000 100%);
+      background: black;
       color: white;
-      font-family: Helvetica, Arial, sans-serif;
+      font-family: Arial;
       text-align: center;
-      margin: 0;
-      overflow: hidden;
-    }
-
-    .container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90%;
-    }
-
-    h2 {
-      font-weight: 200;
-      letter-spacing: 4px;
-      margin-bottom: 40px;
-      opacity: 0.85;
-    }
-
-    input[type="file"] {
-      display: none;
-    }
-
-    .upload-btn {
-      border: 1px solid rgba(255,255,255,0.6);
-      padding: 14px 24px;
-      display: inline-block;
-      cursor: pointer;
-      transition: 0.4s;
-      font-size: 13px;
-      letter-spacing: 2px;
-    }
-
-    .upload-btn:hover {
-      background-color: white;
-      color: black;
+      margin-top: 100px;
     }
 
     #preview {
-      margin-top: 30px;
-      width: 220px;
-      opacity: 0;
-      border-radius: 12px;
-      transition: 1.2s;
-      filter: grayscale(30%) contrast(110%);
+      margin-top: 20px;
+      width: 200px;
+      display: none;
     }
 
     #status {
-      margin-top: 15px;
-      font-size: 11px;
-      opacity: 0.5;
-      letter-spacing: 2px;
-    }
-
-    /* subtle glow effect */
-    .glow {
-      position: absolute;
-      width: 300px;
-      height: 300px;
-      background: radial-gradient(circle, rgba(255,255,255,0.08), transparent);
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      filter: blur(60px);
-      z-index: -1;
+      margin-top: 10px;
+      font-size: 14px;
+      opacity: 0.7;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="glow"></div>
+  <h2>Leave Your Trace</h2>
 
-  <div class="container">
-    <h2>Leave Your Trace</h2>
+  <input type="file" id="fileInput" accept="image/*">
 
-    <label class="upload-btn">
-      Upload Image
-      <input type="file" id="fileInput" accept="image/*">
-    </label>
+  <p id="status">waiting...</p>
 
-    <p id="status">waiting...</p>
-
-    <img id="preview">
-  </div>
+  <img id="preview">
 
   <script>
     const ws = new WebSocket("ws://192.168.45.157:9980");
@@ -105,7 +47,7 @@
       const file = input.files[0];
       if (!file) return;
 
-      status.innerText = "recording...";
+      status.innerText = "uploading...";
 
       const reader = new FileReader();
 
@@ -113,25 +55,11 @@
         const base64 = e.target.result;
 
         preview.src = base64;
-        preview.style.opacity = "0.8";
+        preview.style.display = "block";
 
-        const chunkSize = 8000;
-        let index = 0;
-
-        while (index < base64.length) {
-          const chunk = base64.substring(index, index + chunkSize);
-          ws.send("img:" + chunk);
-          index += chunkSize;
-        }
-
-        ws.send("img:end");
+        ws.send(base64);
 
         status.innerText = "trace recorded";
-
-        setTimeout(() => {
-          preview.style.opacity = "0";
-          status.innerText = "";
-        }, 4000);
       };
 
       reader.readAsDataURL(file);
