@@ -4,12 +4,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background-color: black;
+      background: radial-gradient(circle, #111 0%, #000 100%);
       color: white;
       font-family: Helvetica, Arial, sans-serif;
       text-align: center;
       margin: 0;
-      padding: 0;
+      overflow: hidden;
     }
 
     .container {
@@ -22,9 +22,9 @@
 
     h2 {
       font-weight: 200;
-      letter-spacing: 3px;
-      margin-bottom: 30px;
-      opacity: 0.9;
+      letter-spacing: 4px;
+      margin-bottom: 40px;
+      opacity: 0.85;
     }
 
     input[type="file"] {
@@ -32,13 +32,13 @@
     }
 
     .upload-btn {
-      border: 1px solid white;
-      padding: 12px 20px;
+      border: 1px solid rgba(255,255,255,0.6);
+      padding: 14px 24px;
       display: inline-block;
       cursor: pointer;
-      transition: 0.3s;
-      font-size: 14px;
-      letter-spacing: 1px;
+      transition: 0.4s;
+      font-size: 13px;
+      letter-spacing: 2px;
     }
 
     .upload-btn:hover {
@@ -51,19 +51,35 @@
       width: 220px;
       opacity: 0;
       border-radius: 12px;
-      transition: 1s;
+      transition: 1.2s;
+      filter: grayscale(30%) contrast(110%);
     }
 
     #status {
       margin-top: 15px;
-      font-size: 12px;
-      opacity: 0.6;
-      letter-spacing: 1px;
+      font-size: 11px;
+      opacity: 0.5;
+      letter-spacing: 2px;
+    }
+
+    /* subtle glow effect */
+    .glow {
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(255,255,255,0.08), transparent);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      filter: blur(60px);
+      z-index: -1;
     }
   </style>
 </head>
 
 <body>
+
+  <div class="glow"></div>
 
   <div class="container">
     <h2>Leave Your Trace</h2>
@@ -89,16 +105,16 @@
       const file = input.files[0];
       if (!file) return;
 
+      status.innerText = "recording...";
+
       const reader = new FileReader();
 
       reader.onload = function(e) {
         const base64 = e.target.result;
 
-        // 이미지 보여주기 (fade in)
         preview.src = base64;
         preview.style.opacity = "0.8";
 
-        // 데이터 전송
         const chunkSize = 8000;
         let index = 0;
 
@@ -112,9 +128,9 @@
 
         status.innerText = "trace recorded";
 
-        // 시간 지나면 사라짐 (작품 느낌)
         setTimeout(() => {
           preview.style.opacity = "0";
+          status.innerText = "";
         }, 4000);
       };
 
