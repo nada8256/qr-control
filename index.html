@@ -1,16 +1,37 @@
 <!DOCTYPE html>
 <html>
 <body>
-  <h2>Control</h2>
+  <h2>Control Panel</h2>
 
-  <input type="range" min="0" max="1" step="0.01" id="knob1">
+  <p>Knob 1</p>
+  <input type="range" min="0" max="1" step="0.01" id="k1">
+
+  <p>Knob 2</p>
+  <input type="range" min="0" max="1" step="0.01" id="k2">
+
+  <p>Knob 3</p>
+  <input type="range" min="0" max="1" step="0.01" id="k3">
+
+  <p>Knob 4</p>
+  <input type="range" min="0" max="1" step="0.01" id="k4">
+
+  <p>Knob 5</p>
+  <input type="range" min="0" max="1" step="0.01" id="k5">
 
   <script>
-    const ws = new WebSocket("ws://YOUR_IP:9980");
+    const ws = new WebSocket("ws://192.168.45.157:9980");
 
-    document.getElementById("knob1").oninput = (e) => {
-      ws.send(e.target.value);
-    };
+    function sendValue(id, index) {
+      document.getElementById(id).oninput = (e) => {
+        ws.send(index + ":" + e.target.value);
+      };
+    }
+
+    sendValue("k1", 1);
+    sendValue("k2", 2);
+    sendValue("k3", 3);
+    sendValue("k4", 4);
+    sendValue("k5", 5);
   </script>
 </body>
 </html>
