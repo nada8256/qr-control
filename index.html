@@ -7,15 +7,18 @@
 
   <p id="status">No image selected</p>
 
+  <!-- 👇 이미지 미리보기 -->
+  <img id="preview" width="300" style="display:none; margin-top:10px;">
+
   <script>
     const ws = new WebSocket("ws://192.168.45.157:9980");
 
     const input = document.getElementById("fileInput");
     const status = document.getElementById("status");
+    const preview = document.getElementById("preview");
 
     input.onchange = () => {
       const file = input.files[0];
-
       if (!file) return;
 
       const reader = new FileReader();
@@ -23,7 +26,11 @@
       reader.onload = function(e) {
         const base64 = e.target.result;
 
-        // 너무 길어서 분할해서 보냄
+        // 👇 화면에 이미지 보여주기
+        preview.src = base64;
+        preview.style.display = "block";
+
+        // 👇 데이터 전송
         const chunkSize = 8000;
         let index = 0;
 
@@ -33,7 +40,6 @@
           index += chunkSize;
         }
 
-        // 끝났다는 신호
         ws.send("img:end");
 
         status.innerText = "Image sent!";
@@ -43,4 +49,5 @@
     };
   </script>
 </body>
+</html>
 </html>
