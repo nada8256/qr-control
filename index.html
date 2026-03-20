@@ -1,14 +1,82 @@
 <!DOCTYPE html>
 <html>
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      font-family: Helvetica, Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+
+    .container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+    }
+
+    h2 {
+      font-weight: 200;
+      letter-spacing: 3px;
+      margin-bottom: 30px;
+      opacity: 0.9;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .upload-btn {
+      border: 1px solid white;
+      padding: 12px 20px;
+      display: inline-block;
+      cursor: pointer;
+      transition: 0.3s;
+      font-size: 14px;
+      letter-spacing: 1px;
+    }
+
+    .upload-btn:hover {
+      background-color: white;
+      color: black;
+    }
+
+    #preview {
+      margin-top: 30px;
+      width: 220px;
+      opacity: 0;
+      border-radius: 12px;
+      transition: 1s;
+    }
+
+    #status {
+      margin-top: 15px;
+      font-size: 12px;
+      opacity: 0.6;
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+
 <body>
-  <h2>Upload Your Face</h2>
 
-  <input type="file" id="fileInput" accept="image/*">
+  <div class="container">
+    <h2>Leave Your Trace</h2>
 
-  <p id="status">No image selected</p>
+    <label class="upload-btn">
+      Upload Image
+      <input type="file" id="fileInput" accept="image/*">
+    </label>
 
-  <!-- 👇 이미지 미리보기 -->
-  <img id="preview" width="300" style="display:none; margin-top:10px;">
+    <p id="status">waiting...</p>
+
+    <img id="preview">
+  </div>
 
   <script>
     const ws = new WebSocket("ws://192.168.45.157:9980");
@@ -26,11 +94,11 @@
       reader.onload = function(e) {
         const base64 = e.target.result;
 
-        // 👇 화면에 이미지 보여주기
+        // 이미지 보여주기 (fade in)
         preview.src = base64;
-        preview.style.display = "block";
+        preview.style.opacity = "0.8";
 
-        // 👇 데이터 전송
+        // 데이터 전송
         const chunkSize = 8000;
         let index = 0;
 
@@ -42,12 +110,17 @@
 
         ws.send("img:end");
 
-        status.innerText = "Image sent!";
+        status.innerText = "trace recorded";
+
+        // 시간 지나면 사라짐 (작품 느낌)
+        setTimeout(() => {
+          preview.style.opacity = "0";
+        }, 4000);
       };
 
       reader.readAsDataURL(file);
     };
   </script>
+
 </body>
-</html>
 </html>
